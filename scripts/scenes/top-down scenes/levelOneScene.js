@@ -12,6 +12,8 @@ export default class levelOneScene extends Phaser.Scene {
     }
 
     create() {
+
+        this.lives = 3;
         
 
         /* TILE MAP */
@@ -222,12 +224,12 @@ export default class levelOneScene extends Phaser.Scene {
         
         this.createEnemies();
 
-        this.ghost1 = this.physics.add.sprite(400, 400, 'ghost');
-        this.ghost2 = this.physics.add.sprite(700, 700, 'ghost');
-        this.ghost1.setScale(.76);
-        this.ghost2.setScale(.76);
-        this.ghost1.setCollideWorldBounds(true);
-        this.ghost2.setCollideWorldBounds(true);
+        // this.ghost1 = this.physics.add.sprite(400, 400, 'ghost');
+        // this.ghost2 = this.physics.add.sprite(700, 700, 'ghost');
+        // this.ghost1.setScale(.76);
+        // this.ghost2.setScale(.76);
+        // this.ghost1.setCollideWorldBounds(true);
+        // this.ghost2.setCollideWorldBounds(true);
 
         // Enable Collision
         this.physics.add.collider(this.player, collisionLayer);
@@ -242,8 +244,9 @@ export default class levelOneScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.endLayer, this.transitionToNextLevel, null, this); 
         this.physics.add.collider(this.player, this.fakeKeyLayer, this.resetPlayerPosition, null, this); 
         this.physics.add.collider(this.player, this.key, this.disableClosedLayer, null, this); 
-        this.physics.add.collider(this.player, this.ghost1, this.resetPlayerPositionEnemy, null, this);
-        this.physics.add.collider(this.player, this.ghost2, this.resetPlayerPositionEnemy, null, this);
+        this.physics.add.collider(this.player, this.ghostEnemies, this.resetPlayerPositionEnemy, null, this);
+        this.physics.add.collider(this.player, this.slimeEnemies, this.resetPlayerPositionEnemy, null, this);
+        //this.physics.add.collider(this.magicBolts, this.ghostEnemies, this.hitEnemy, null, this);
         
 
         // Create interaction image and hide it initially
@@ -372,8 +375,26 @@ export default class levelOneScene extends Phaser.Scene {
         let x = Phaser.Math.Between(100, 900);
         let y = Phaser.Math.Between(100, 760);
 
-        let slime1 = new Enemy( this, 480, 144, 'slimeIdle', null );
+        let slime1 = new Enemy( this, 32, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime1 );
+
+        let slime2 = new Enemy( this, 400, 224, 'slimeIdle', null );
+        this.slimeEnemies.add( slime2 );
+
+        let slime3 = new Enemy( this, 368, 464, 'slimeIdle', null );
+        this.slimeEnemies.add( slime3 );
+
+        let slime4 = new Enemy( this, 848, 240, 'slimeIdle', null );
+        this.slimeEnemies.add( slime4 );
+        
+        let slime5 = new Enemy( this, 992, 64, 'slimeIdle', null );
+        this.slimeEnemies.add( slime5 );
+
+        let slime6 = new Enemy( this, 976, 208, 'slimeIdle', null );
+        this.slimeEnemies.add( slime6 );
+
+        let slime7 = new Enemy( this, 1280, 352, 'slimeIdle', null );
+        this.slimeEnemies.add( slime7 );
 
         this.slimeEnemies.children.each((slime) => {
             slime.setCollideWorldBounds(true);
@@ -381,6 +402,9 @@ export default class levelOneScene extends Phaser.Scene {
 
         let ghost1 = new Enemy( this, x, y, 'ghost', null );
         this.ghostEnemies.add( ghost1 );
+
+        let ghost2 = new Enemy ( this, x, y, 'ghost', null );
+        this.ghostEnemies.add( ghost2 );
 
         this.ghostEnemies.children.each((ghost) => {
             ghost.setCollideWorldBounds(false);
@@ -392,9 +416,9 @@ export default class levelOneScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives <= 0) {
-                this.scene.start('GameOverScene'); 
+                this.scene.start('loseScene'); 
             } else {
-                this.player.setPosition(200, 100); 
+                this.player.setPosition(100, 450); 
             }
         }
     }
@@ -403,9 +427,9 @@ export default class levelOneScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives <= 0) {
-                this.scene.start('GameOverScene'); 
+                this.scene.start('loseScene'); 
             } else {
-                this.player.setPosition(200, 100); 
+                this.player.setPosition(100, 450); 
             }
         }
     }
@@ -632,7 +656,8 @@ export default class levelOneScene extends Phaser.Scene {
             }
         }
         
-        this.physics.moveToObject(this.ghost1, this.player, 20);
-        this.physics.moveToObject(this.ghost2, this.player, 20);
+        if (this.ghostEnemies && this.ghostEnemies.body) {
+            this.physics.moveToObject(this.ghostEnemies, this.player, 80);
+        }
     }
 }
