@@ -1,6 +1,7 @@
 import studioBootScene from "./scenes/loading scenes/studioBootScene.js";
 import bootScene from "./scenes/loading scenes/bootScene.js";
 import mainMenuScene from "./scenes/mainMenuScene.js";
+import creditScene from "./scenes/creditScene.js";
 import startVNScene from "./scenes/visual novel scenes/startVNScene.js";
 import tutorialBootScene from "./scenes/loading scenes/tutorialBootScene.js";
 import tutoralLevelScene from "./scenes/top-down scenes/tutorialLevelScene.js";
@@ -30,6 +31,7 @@ var config = {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         parent: 'game-container'
     },
+    
     scene: [ studioBootScene, 
         bootScene, 
         mainMenuScene, 
@@ -42,7 +44,8 @@ var config = {
         levelTwoScene, 
         endVNScene, 
         loseScene, 
-        winScene ]
+        winScene,
+        creditScene]
 };
 
 new Phaser.Game( config );

@@ -15,6 +15,13 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.image( 'quitButton', '../assets/gui/buttons/quitButton.png' );
         this.load.image( 'retryButton', '../assets/gui/buttons/retryIcon.png' );
         this.load.image( 'startButton', '../assets/gui/buttons/startButton.png' );
+        this.load.image('creditBackground', '../assets/gui/backgrounds/credits1.png');
+        this.load.image('backButton', '../assets/gui/buttons/arrowLeftBtn.png');
+
+
+        // WIN AND LOSE
+        this.load.image( 'winBG', '../assets/gui/backgrounds/winbg.png' );
+        this.load.image( 'loseBG', '../assets/gui/backgrounds/loseBg.png' );
 
         // FONTS
         this.load.bitmapFont( 'font', '../assets/gui/fonts/thick_8x8.png', '../assets/gui/fonts/thick_8x8.xml' );
@@ -103,6 +110,9 @@ export default class studioBootScene extends Phaser.Scene {
 
         // SOUNDS
         this.load.audio( 'vnBGM', '../assets/sounds/bgm/For Game Prog.ogg' );
+        this.load.audio( 'menuBGM', '../assets/sounds/bgm/Menu Theme.mp3' );
+        this.load.audio( 'loseBGM', '../assets/sounds/bgm/game_over.mp3' );
+        this.load.audio( 'winBGM', '../assets/sounds/bgm/win music 3.wav' );
         this.load.audio( 'magicAura', '../assets/sounds/sfx/magicAura.mp3' );
         this.load.audio( 'rattlingDoor', '../assets/sounds/sfx/rattlingDoor.mp3' );
         this.load.audio( 'openDoor', '../assets/sounds/sfx/openDoor.mp3' );
@@ -121,6 +131,7 @@ export default class studioBootScene extends Phaser.Scene {
         const centerY = this.sys.game.config.height / 2;
 
         this.logo = this.add.image( centerX, centerY, 'studioLogo' );
+        this.logo.setScale( 0.35 );
         this.logo.setAlpha( 0 );
 
         this.tweens.add({
@@ -139,7 +150,7 @@ export default class studioBootScene extends Phaser.Scene {
             }
         });
 
-        this.time.delayedCall( 1000, () => {
+        this.time.delayedCall( 7000, () => {
             this.scene.start( 'bootScene' );
         });
     }
