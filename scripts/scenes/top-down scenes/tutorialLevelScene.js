@@ -262,6 +262,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
                 });
             }
         });
+
+        
         
         
 
@@ -386,7 +388,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives <= 0) {
-                this.scene.start('GameOverScene'); 
+                this.scene.start('loseScene'); 
             } else {
                 this.player.setPosition(200, 100); 
             }
@@ -397,7 +399,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives <= 0) {
-                this.scene.start('GameOverScene'); 
+                this.scene.start('loseScene'); 
             } else {
                 this.player.setPosition(200, 100); 
             }
