@@ -24,7 +24,7 @@ export default class mainMenuScene extends Phaser.Scene {
         startButton.setInteractive();
         startButton.setScale( 0.2 );
         startButton.on( 'pointerdown', () => {
-            this.scene.start( 'levelOneScene' );
+            this.scene.start( 'startVNScene' );
             // this.backgroundMusic.stop();
         });
 

@@ -94,13 +94,13 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.image( 'magicDoor', '../assets/art/backgrounds/magicDoor.png' );
 
         // CHARACTER ILLUSTRATIONS
-        this.load.image( 'koreCast', '../assets/art/characters/illustrations/koreCast.png' );
-        this.load.image( 'koreGrin', '../assets/art/characters/illustrations/koreGrin.png' );
-        this.load.image( 'koreNormal', '../assets/art/characters/illustrations/koreNormal.png' );
-        this.load.image( 'koreShock', '../assets/art/characters/illustrations/koreShock.png' );
-        this.load.image( 'koreThink', '../assets/art/characters/illustrations/koreThink.png' );
-        this.load.image( 'koreWince', '../assets/art/characters/illustrations/koreWince.png' );
-        this.load.image( 'koreWorried', '../assets/art/characters/illustrations/koreWorried.png' );
+        this.load.image( 'koreCast', '../assets/art/characters/illustrations/Resized/Resized/koreCast.png' );
+        this.load.image( 'koreGrin', '../assets/art/characters/illustrations/Resized/Resized/koreGrin.png' );
+        this.load.image( 'koreNormal', '../assets/art/characters/illustrations/Resized/Resized/koreNormal.png' );
+        this.load.image( 'koreShock', '../assets/art/characters/illustrations/Resized/Resized/koreShock.png' );
+        this.load.image( 'koreThink', '../assets/art/characters/illustrations/Resized/Resized/koreThink.png' );
+        this.load.image( 'koreWince', '../assets/art/characters/illustrations/Resized/Resized/koreWince.png' );
+        this.load.image( 'koreWorried', '../assets/art/characters/illustrations/Resized/Resized/koreWorried.png' );
 
         // SOUNDS
         this.load.audio( 'vnBGM', '../assets/sounds/bgm/For Game Prog.ogg' );
@@ -108,6 +108,15 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.audio( 'rattlingDoor', '../assets/sounds/sfx/rattlingDoor.mp3' );
         this.load.audio( 'openDoor', '../assets/sounds/sfx/openDoor.mp3' );
         this.load.audio( 'buttonClick', '../assets/sounds/sfx/button1.mp3' );
+        
+        
+        this.load.audio('footsteps', './assets/Sounds/sfx/SFX/footsteps3.mp3');
+        this.load.audio('spellBreak', './assets/Sounds/sfx/SFX/spellBroken.mp3');
+        this.load.audio('openDoor', './assets/Sounds/sfx/SFX/openDoor.mp3');
+        this.load.audio('casting', './assets/Sounds/sfx/SFX/casting.mp3');
+        this.load.audio('unlockDoor', './assets/Sounds/sfx/SFX/unlock.mp3');
+        this.load.audio('openDoor1', './assets/Sounds/sfx/SFX/openDoor1.mp3');
+        this.load.audio('magicSFX', './assets/Sounds/sfx/SFX/magicAura.mp3');
 
         // GUI
         this.load.image( 'dialogueBox', '../assets/gui/textboxes/dialogueBoxResized1.png' );
