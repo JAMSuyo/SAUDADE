@@ -1,3 +1,8 @@
+import Bullet from "./bullets.js";
+import Enemy from "./enemy.js";
+import { Ghost } from "./enemy.js";
+import { Slime } from "./enemy.js";
+
 export default class levelOneScene extends Phaser.Scene {
 
     constructor() {
@@ -41,6 +46,12 @@ export default class levelOneScene extends Phaser.Scene {
 
         this.fakeKeyLayer = mapOne.createLayer('Fake-Key', tilesetTwo, 0, 0); 
         const backgroundLayer = mapOne.createLayer('background', tilesetTwo, 0, 0);
+
+
+        
+        this.physics.world.setBounds(0, 0, mapOne.widthInPixels, mapOne.heightInPixels);
+        this.cameras.main.setBounds(0, 0, mapOne.widthInPixels, mapOne.heightInPixels);
+
         
         // Initial Levers
         this.leverPulledLayer.setVisible(false);
@@ -70,7 +81,7 @@ export default class levelOneScene extends Phaser.Scene {
 
 
         /* MAIN CHARACTER */
-        this.player = this.physics.add.sprite(105, 820, 'frontIdle');
+        this.player = this.physics.add.sprite(100, 450, 'frontIdle');
 
         // Camera follow the player
         this.cameras.main.startFollow(this.player);
@@ -196,22 +207,48 @@ export default class levelOneScene extends Phaser.Scene {
 
         this.player.body.setSize(8, 8);
 
-        // Enable Collision
-            this.physics.add.collider(this.player, collisionLayer);
-            this.physics.add.collider(this.player, brokenWoodenFloor, this.resetPlayerPosition, null, this); 
-            this.physics.add.collider(this.player, this.leverUnpulledLayer, this.showInteractionImage, null, this);
-            this.physics.add.collider(this.player, this.leverUnpulledOuterSpike, this.showInteractionImage, null, this);
-            this.physics.add.collider(this.player, this.leverUnpulledInnerSpike, this.showInteractionImage, null, this);
-            this.physics.add.collider(this.player, this.trapOnOuter, this.resetPlayerPosition, null, this);
-            this.physics.add.collider(this.player, this.trapOnInner, this.resetPlayerPosition, null, this);
-            this.physics.add.collider(this.player, this.fenceClosed);
-            this.physics.add.collider(this.player, this.Close);
-            this.physics.add.collider(this.player, this.endLayer, this.transitionToNextLevel, null, this); 
-            this.physics.add.collider(this.player, this.fakeKeyLayer, this.resetPlayerPosition, null, this); 
-            this.physics.add.collider(this.player, this.key, this.disableClosedLayer, null, this); 
-            //this.physics.add.collider(this.player, this.ghost1, this.resetPlayerPosition, null, this);
-            //this.physics.add.collider(this.player, this.ghost2, this.resetPlayerPosition, null, this);
+        /* ENEMY */
 
+        this.ghostEnemies = this.physics.add.group({
+            classType: Ghost,
+            runChildUpdate: true
+        });
+
+        this.createAnimations();
+        this.slimeEnemies = this.physics.add.group({
+            classType: Slime,
+            runChildUpdate: true
+        });
+        
+        this.createEnemies();
+
+        this.ghost1 = this.physics.add.sprite(400, 400, 'ghost');
+        this.ghost2 = this.physics.add.sprite(700, 700, 'ghost');
+        this.ghost1.setScale(.76);
+        this.ghost2.setScale(.76);
+        this.ghost1.setCollideWorldBounds(true);
+        this.ghost2.setCollideWorldBounds(true);
+
+        // Enable Collision
+        this.physics.add.collider(this.player, collisionLayer);
+        this.physics.add.collider(this.player, brokenWoodenFloor, this.resetPlayerPosition, null, this); 
+        this.physics.add.collider(this.player, this.leverUnpulledLayer, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.leverUnpulledOuterSpike, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.leverUnpulledInnerSpike, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.trapOnOuter, this.resetPlayerPosition, null, this);
+        this.physics.add.collider(this.player, this.trapOnInner, this.resetPlayerPosition, null, this);
+        this.physics.add.collider(this.player, this.fenceClosed);
+        this.physics.add.collider(this.player, this.Close);
+        this.physics.add.collider(this.player, this.endLayer, this.transitionToNextLevel, null, this); 
+        this.physics.add.collider(this.player, this.fakeKeyLayer, this.resetPlayerPosition, null, this); 
+        this.physics.add.collider(this.player, this.key, this.disableClosedLayer, null, this); 
+        this.physics.add.collider(this.player, this.ghost1, this.resetPlayerPositionEnemy, null, this);
+        this.physics.add.collider(this.player, this.ghost2, this.resetPlayerPositionEnemy, null, this);
+        
+
+        // Create interaction image and hide it initially
+        this.interactionImage = this.add.image(0, 0, 'eKey').setVisible(false).setDepth(1);
+        this.interactionType = null;
 
         /* CONTROLS */
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -242,12 +279,135 @@ export default class levelOneScene extends Phaser.Scene {
                 });
             }
         });
+
+
+        this.magicBolts = this.physics.add.group({
+            classType: Bullet,
+            runChildUpdate: true
+        });
+
+        this.input.on('pointerdown', this.shootBullet, this);
+
+        this.physics.add.collider( this.magicBolts, this.enemies, this.hitEnemy, null, this);
+        this.physics.add.collider( this.magicBolts, this.slimeEnemies, this.hitEnemy, null, this);
+
+        if (!this.anims.exists('magicBoltAnim')) {
+            this.anims.create({
+                key: 'magicBoltAnim',
+                frames: this.anims.generateFrameNumbers('magicBolt', { start: 0, end: 29 }),
+                frameRate: 30,
+                repeat: -1
+            });
+        }
+
+
+
+        /* COLLECTIBLES */
+
+        this.dmg.setTileIndexCallback( 709, this.collectDMG, this );
+        this.physics.add.overlap( this.player, this.dmg );
         
+        this.dmgFX = this.add.sprite(0, 0, 'blueFire').setVisible(false);
+        this.anims.create({
+            key: 'dmgFX',
+            frames: this.anims.generateFrameNumbers( 'blueFire', { start: 0, end: 60 }),
+            frameRate: 10, 
+            repeat: -1
+        });
+        this.dmgFX.setSize( 16, 16 );
+        console.log('dmgfx')
+        
+
+        this.hp.setTileIndexCallback( 781, this.collectHP, this );
+        this.physics.add.overlap( this.player, this.hp );
+
+
+        this.shield.setTileIndexCallback( 711, this.collectShield, this );
+        this.physics.add.overlap( this.player, this.shield );
+
+
+        this.physics.add.collider(this.magicBolts, this.ghost1, this.hitEnemy, null, this);
+        this.physics.add.collider(this.magicBolts, this.ghost2, this.hitEnemy, null, this);
+        
+    }
+
+    createAnimations() {
+        this.anims.create({
+            key: 'slimeAttack',
+            frames: this.anims.generateFrameNumbers( 'slimeAttack', { start: 0, end: 14 }),
+            frameRate: 20,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'slimeDeath',
+            frames: this.anims.generateFrameNumbers( 'slimeDeath', { start: 0, end: 14 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'slimeHurt',
+            frames: this.anims.generateFrameNumbers( 'slimeHurt', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'slimeIdle',
+            frames: this.anims.generateFrameNumbers( 'slimeIdle', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'slimeWalk',
+            frames: this.anims.generateFrameNumbers( 'slimeWalk', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
+    }
+
+    createEnemies() {
+        let x = Phaser.Math.Between(100, 900);
+        let y = Phaser.Math.Between(100, 760);
+
+        let slime1 = new Enemy( this, 480, 144, 'slimeIdle', null );
+        this.slimeEnemies.add( slime1 );
+
+        this.slimeEnemies.children.each((slime) => {
+            slime.setCollideWorldBounds(true);
+        }, this);
+
+        let ghost1 = new Enemy( this, x, y, 'ghost', null );
+        this.ghostEnemies.add( ghost1 );
+
+        this.ghostEnemies.children.each((ghost) => {
+            ghost.setCollideWorldBounds(false);
+        }, this);
     }
 
 
     resetPlayerPosition(player, tile) {
-        this.player.setPosition(105, 820);
+        if (!this.isInvuln) {
+            this.lives -= 1; // Decrease life
+            if (this.lives <= 0) {
+                this.scene.start('GameOverScene'); 
+            } else {
+                this.player.setPosition(200, 100); 
+            }
+        }
+    }
+    
+    resetPlayerPositionEnemy(player, enemy) {
+        if (!this.isInvuln) {
+            this.lives -= 1; // Decrease life
+            if (this.lives <= 0) {
+                this.scene.start('GameOverScene'); 
+            } else {
+                this.player.setPosition(200, 100); 
+            }
+        }
     }
 
     showInteractionImage(player, tile) {
@@ -296,6 +456,114 @@ export default class levelOneScene extends Phaser.Scene {
 
     transitionToNextLevel(player, tile) {
         this.scene.start('levelTwoBootScene');
+    }
+
+    shootBullet(pointer) {
+        var bullet = this.magicBolts.get(); 
+    
+        if (bullet) {
+            bullet.fire(this.player.x, this.player.y);
+    
+            // Get game bounds
+            const gameBounds = this.scale.gameSize;
+            
+            // Clamp pointer coordinates to be within game bounds
+            const targetX = Phaser.Math.Clamp(pointer.x, 0, gameBounds.width);
+            const targetY = Phaser.Math.Clamp(pointer.y, 0, gameBounds.height);
+            
+            // Calculate angle towards clamped pointer coordinates
+            var angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, targetX, targetY);
+    
+            // Rotate bullet sprite towards pointer
+            bullet.setRotation(angle);
+    
+            // Set bullet velocity towards clamped pointer coordinates
+            this.physics.velocityFromRotation(angle, 500, bullet.body.velocity);
+        }
+    }
+
+    hitEnemy(bullet, enemy) {
+        // if (!bullet.active) return; // Check if bullet is active (to prevent multiple hits)
+    
+        // bullet.destroy(); // Destroy bullet
+        // enemy.takeDamage(50); // Inflict damage on the enemy
+    
+        // // Check if enemy should be destroyed (second hit or player has damage power-up)
+        // if (!enemy.active) return;
+    
+        // // Second hit or instant destruction if player has damage power-up
+        // setTimeout(() => {
+        //     if (enemy.active) {
+        //         enemy.takeDamage(50); // Second hit
+        //     }
+        // }, 500);
+        bullet.destroy();
+        enemy.destroy();
+    }
+
+    collectDMG( sprite, tile ) {
+        this.dmg.removeTileAt( tile.x, tile.y ); 
+        
+        let tintColor = 0xff0000; 
+        let tintDuration = 10000; 
+
+        // Tint the sprite immediately
+        this.player.setTint(tintColor);
+
+        // Create a tween to remove the tint after tintDuration
+        this.tweens.add({
+            targets:this.player,
+            tint: 0xffffff, // Return to no tint (white)
+            duration: tintDuration,
+            onComplete: function() {
+                // Optionally, perform actions after the tint is removed
+                console.log('Tint effect complete!');
+             }
+        });
+
+    }
+
+    collectHP( sprite, tile ) {
+        this.hp.removeTileAt( tile.x, tile.y );
+
+        let tintColor = 0x53ae42;
+        let tintDuration = 2000;
+
+        this.player.setTint(tintColor);
+
+        this.tweens.add({
+            targets:this.player,
+            tint: 0xffffff, // Return to no tint (white)
+            duration: tintDuration,
+            onComplete: function() {
+                // Optionally, perform actions after the tint is removed
+                console.log('Tint effect complete!');
+             }
+        });
+
+        this.lives += 1;
+        // hearts
+    }
+
+    collectShield( sprite, tile ) {
+        this.shield.removeTileAt( tile.x, tile.y );
+
+        let tintColor = 0x3270e1;
+        let tintDuration = 10000;
+
+        this.isInvuln = true;
+        this.player.setTint(tintColor);
+
+        this.tweens.add({
+            targets:this.player,
+            tint: 0xffffff, // Return to no tint (white)
+            duration: tintDuration,
+            onComplete: function() {
+                // Optionally, perform actions after the tint is removed
+                console.log('Tint effect complete!');
+                this.isInvuln = false;
+             }
+        });
     }
 
 
@@ -356,13 +624,15 @@ export default class levelOneScene extends Phaser.Scene {
         // Check for interaction key press
         if (this.interactionImage.visible && Phaser.Input.Keyboard.JustDown(this.eKey)) {
             if (this.interactionType === 'lever') {
-                this.pullLever();
-            } else if (this.interactionType === 'tome') {
-                this.getTome();
-            } else if (this.interactionType === 'key') {
-                this.getKey();
+                this.pullLeverOne();
+            } else if (this.interactionType === 'outerSpike') {
+                this.triggerOuterSpike();
+            } else if (this.interactionType === 'innerSpike') {
+                this.triggerInnerSpike();
             }
         }
         
+        this.physics.moveToObject(this.ghost1, this.player, 20);
+        this.physics.moveToObject(this.ghost2, this.player, 20);
     }
 }
