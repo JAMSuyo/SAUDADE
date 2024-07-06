@@ -11,6 +11,7 @@ import levelTwoScene from "./scenes/top-down scenes/levelTwoScene.js";
 import endVNScene from "./scenes/visual novel scenes/endVNScene.js";
 import loseScene from "./scenes/loseScene.js";
 import winScene from "./scenes/winScene.js";
+import creditsScene from "./scenes/creditsScene.js";
 
 
 
@@ -42,7 +43,8 @@ var config = {
         levelTwoScene, 
         endVNScene, 
         loseScene, 
-        winScene ]
+        winScene,
+        creditsScene ]
 };
 
 new Phaser.Game( config );

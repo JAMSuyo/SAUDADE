@@ -58,16 +58,16 @@ export default class startVNScene extends Phaser.Scene {
         this.magicDoorImage = this.add.image(0, 0, 'magicDoor').setOrigin(0, 0).setAlpha(0.3);
 
         // Character image, initially hidden
-        this.characterImage = this.add.image(300, 410, 'koreWince').setScale(0.65).setAlpha(0);
+        this.characterImage = this.add.image(100, 210, 'koreWince').setScale(0.45).setAlpha(0);
 
         // Dialogue box, initially hidden
-        this.dialogueBox = this.add.image(450, 410, 'dialogueBox').setAlpha(0);
+        this.dialogueBox = this.add.image(170, 170, 'dialogueBox').setScale(0.42).setAlpha(0);
 
         // Dialogue text, initially hidden
-        this.dialogueText = this.add.text(130, 390, '', {
-            fontSize: '18px',
+        this.dialogueText = this.add.text(40, 160, '', {
+            fontSize: '10px',
             fill: '#fff',
-            wordWrap: { width: 650 }
+            wordWrap: { width: 250 }
         }).setAlpha(0);
 
         // Start playing background music immediately

@@ -1,7 +1,7 @@
-export default class EndVNScene extends Phaser.Scene {
+export default class endVNScene extends Phaser.Scene {
 
     constructor(){
-        super('EndVNScene');
+        super('endVNScene');
 
         this.dialogueIndex = 0;
         this.dialoguePartIndex = 0;
@@ -27,53 +27,27 @@ export default class EndVNScene extends Phaser.Scene {
         ];
     }
 
-    preload(){
-        // Loading assets and sounds
-        this.load.image('koreGrin', './assets/Image/Illustration/Character/NEWResized2/koreGrin.png');
-        this.load.image('koreNormal', './assets/Image/Illustration/Character/NEWResized2/koreNormal.png');
-        this.load.image('koreShock', './assets/Image/Illustration/Character/NEWResized2/koreShock.png');
-        this.load.image('koreThink', './assets/Image/Illustration/Character/NEWResized2/koreThink.png');
-        this.load.image('koreWince', './assets/Image/Illustration/Character/NEWResized2/koreWince.png');
-        this.load.image('koreWorried', './assets/Image/Illustration/Character/NEWResized2/koreWorried.png');
-        this.load.image('koreCast', './assets/Image/Illustration/Character/NEWResized2/koreCast.png');
-
-        this.load.image('background', './assets/Image/Illustration/Background/Runes 1.png');
-        this.load.image('magicDoor', './assets/Image/Illustration/Background/magicDoor.png');
-        this.load.image('dialogueBox', './assets/Image/GUI/textBoxResized.png');
-        this.load.image('dialogueBox2', './assets/Image/GUI/dialogueBoxResized1.png');
-
-        this.load.audio('bgm', './assets/Sounds/BGM/For Game Prog.ogg');
-        this.load.audio('buttonClick', './assets/Sounds/SFX/button1.mp3');
-        this.load.audio('footsteps', './assets/Sounds/SFX/footsteps3.mp3');
-        this.load.audio('spellBreak', './assets/Sounds/SFX/spellBroken.mp3');
-        this.load.audio('openDoor', './assets/Sounds/SFX/openDoor.mp3');
-        this.load.audio('casting', './assets/Sounds/SFX/casting.mp3');
-        this.load.audio('unlockDoor', './assets/Sounds/SFX/unlock.mp3');
-        this.load.audio('openDoor1', './assets/Sounds/SFX/openDoor1.mp3');
-        this.load.audio('magicSFX', './assets/Sounds/SFX/magicAura.mp3');
-    }
-
     create() {
         // Adding background and blinking effect
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        this.add.image(0, 0, 'vnBG').setOrigin(0, 0);
         this.magicDoorImage = this.add.image(0, 0, 'magicDoor').setOrigin(0, 0).setAlpha(0.3);
         this.blinkMagicDoor();
 
         // Character image, invisible at first
-        this.characterImage = this.add.image(300, 410, 'koreNormal').setScale(0.65).setAlpha(0);
+        this.characterImage = this.add.image(100, 210, 'koreNormal').setScale(0.45).setAlpha(0);
 
         // Dialogue box, invisible at first
-        this.dialogueBox = this.add.image(450, 410, 'dialogueBox2').setAlpha(0);
+        this.dialogueBox = this.add.image(170, 170, 'dialogueBox').setScale(0.42).setAlpha(0);
 
         // Dialogue text, invisible at first
-        this.dialogueText = this.add.text(130, 390, '', {
-            fontSize: '18px',
+        this.dialogueText = this.add.text(40, 160, '', {
+            fontSize: '10px',
             fill: '#fff',
-            wordWrap: { width: 650 }
+            wordWrap: { width: 250 }
         }).setAlpha(0);
 
         // BGM, muted at first
-        this.bgm = this.sound.add('bgm', { loop: true, volume: 0 });
+        this.bgm = this.sound.add('vnBGM', { loop: true, volume: 0 });
         this.bgm.play();
 
         // Footsteps, muted at first
@@ -347,8 +321,8 @@ export default class EndVNScene extends Phaser.Scene {
 
         this.cameras.main.fadeOut(1000, 0, 0, 0, (camera, progress) => {
             if (progress === 1) {
-                // Transition to the next scene
-                //this.scene.start('transitionScene'); // Replace 'TransitionScene' with your actual scene key
+                this.bgm.stop();
+                this.scene.start('winScene');
             }
         });
 

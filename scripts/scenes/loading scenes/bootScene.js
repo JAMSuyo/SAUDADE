@@ -13,7 +13,7 @@ export default class bootScene extends Phaser.Scene {
        // Click start for bypassing audio bug
        this.time.delayedCall( 1000, () => {
         
-            const startText = this.add.bitmapText( centerX, centerY + -10, 'font', 'Click to Start', 50 ).setOrigin( 0.5, 0.5 );
+            const startText = this.add.bitmapText( centerX, centerY + -10, 'font', 'Click to Start', 15 ).setOrigin( 0.5, 0.5 );
 
             this.input.once( 'pointerdown', () => {
                 this.scene.start( 'mainMenuScene' );
