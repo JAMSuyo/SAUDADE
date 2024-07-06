@@ -25,7 +25,13 @@ export default class tutorialLevelScene extends Phaser.Scene {
     create() {
 
         this.lives = 3;
-        
+        this.heartIcons = [];
+
+        // Display heart icons based on the initial number of lives
+        for (let i = 0; i < this.lives; i++) {
+            const heart = this.add.image(50 + i * 40, 50, 'heart');
+            this.heartIcons.push(heart);
+        }
         
 
         /* TILE MAP */
@@ -225,7 +231,9 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.tome, this.showInteractionImage, null, this);
         this.physics.add.collider(this.player, this.key, this.showInteractionImage, null, this);
         this.physics.add.collider(this.player, doorOpen, this.endOfTutorial, null, this);
-        this.physics.add.collider(this.player, this.ghostEnemies, this.resetPlayerPositionEnemy, null, this);
+        // this.physics.add.collider(this.player, this.ghostEnemies, this.resetPlayerPositionEnemy, null, this);
+        // this.physics.add.collider(this.player, this.ghostEnemies, this.hitEnemy, null, this);
+        this.physics.add.collider(this.player, this.slimeEnemies, this.hitEnemy, null, this);
         this.physics.add.collider(this.player, this.slimeEnemies, this.resetPlayerPositionEnemy, null, this);
 
         // Create interaction image and hide it initially
@@ -350,33 +358,48 @@ export default class tutorialLevelScene extends Phaser.Scene {
         });
     }
 
+    updateLives(newLives) {
+        // Remove existing heart icons
+        this.heartIcons.forEach(heart => heart.destroy());
+        this.heartIcons = [];
+
+        // Update the lives count
+        this.lives = newLives;
+
+        // Display updated heart icons
+        for (let i = 0; i < this.lives; i++) {
+            const heart = this.add.image(50 + i * 40, 50, 'heart');
+            this.heartIcons.push(heart);
+        }
+    }
+
     createEnemies() {
         let x = Phaser.Math.Between(100, 900);
         let y = Phaser.Math.Between(100, 760);
 
-        let slime1 = new Enemy( this, 480, 144, 'slimeIdle', null );
+        let slime1 = new Slime( this, 480, 144, 'slimeIdle', null );
         this.slimeEnemies.add( slime1 );
 
-        let slime2 = new Enemy( this, 320, 464, 'slimeIdle', null );
+        let slime2 = new Slime( this, 320, 464, 'slimeIdle', null );
         this.slimeEnemies.add( slime2 );
 
-        let slime3 = new Enemy( this, 96, 576, 'slimeIdle', null );
+        let slime3 = new Slime( this, 96, 576, 'slimeIdle', null );
         this.slimeEnemies.add( slime3 );
 
-        let slime4 = new Enemy( this, 688, 448, 'slimeIdle', null );
+        let slime4 = new Slime( this, 688, 448, 'slimeIdle', null );
         this.slimeEnemies.add( slime4 );
 
-        let slime5 = new Enemy( this, 784, 576, 'slimeIdle', null );
+        let slime5 = new Slime( this, 784, 576, 'slimeIdle', null );
         this.slimeEnemies.add( slime5 );
 
-        let slime6 = new Enemy( this, 768, 752, 'slimeIdle', null );
+        let slime6 = new Slime( this, 768, 752, 'slimeIdle', null );
         this.slimeEnemies.add( slime6 );
 
         this.slimeEnemies.children.each((slime) => {
             slime.setCollideWorldBounds(true);
         }, this);
 
-        let ghost1 = new Enemy( this, x, y, 'ghost', null );
+        let ghost1 = new Ghost( this, x, y, 'ghost', null );
         this.ghostEnemies.add( ghost1 );
 
         this.ghostEnemies.children.each((ghost) => {
@@ -636,7 +659,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
         // Ghost follow Kore
         if (this.ghostEnemies && this.ghostEnemies.body) {
-            this.physics.moveToObject(this.ghostEnemies, this.player, 80);
+            this.physics.moveToObject(this.ghostEnemies, this.player, 40);
         }        
         
     }

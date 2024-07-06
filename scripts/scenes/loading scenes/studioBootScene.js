@@ -84,6 +84,7 @@ export default class studioBootScene extends Phaser.Scene {
         // > Visual Effects
         this.load.spritesheet( 'magicBolt', '../assets/art/visual effects/magicBolt.png', { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet( 'blueFire', '../assets/art/visual effects/blueFire.png', { frameWidth: 10, frameHeight: 10 });
+        this.load.image('heart', '../assets/gui/logos/full.png');
 
 
         /* VISUAL NOVEL PORTION ASSETS */

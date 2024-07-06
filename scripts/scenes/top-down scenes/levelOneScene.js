@@ -224,13 +224,6 @@ export default class levelOneScene extends Phaser.Scene {
         
         this.createEnemies();
 
-        // this.ghost1 = this.physics.add.sprite(400, 400, 'ghost');
-        // this.ghost2 = this.physics.add.sprite(700, 700, 'ghost');
-        // this.ghost1.setScale(.76);
-        // this.ghost2.setScale(.76);
-        // this.ghost1.setCollideWorldBounds(true);
-        // this.ghost2.setCollideWorldBounds(true);
-
         // Enable Collision
         this.physics.add.collider(this.player, collisionLayer);
         this.physics.add.collider(this.player, brokenWoodenFloor, this.resetPlayerPosition, null, this); 
@@ -256,6 +249,15 @@ export default class levelOneScene extends Phaser.Scene {
         /* CONTROLS */
         this.cursors = this.input.keyboard.createCursorKeys();
         this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);        
+
+
+        this.keys = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
 
         this.input.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown() || pointer.touchstart) {
@@ -329,8 +331,8 @@ export default class levelOneScene extends Phaser.Scene {
         this.physics.add.overlap( this.player, this.shield );
 
 
-        this.physics.add.collider(this.magicBolts, this.ghost1, this.hitEnemy, null, this);
-        this.physics.add.collider(this.magicBolts, this.ghost2, this.hitEnemy, null, this);
+        this.physics.add.collider(this.magicBolts, this.ghostEnemies, this.hitEnemy, null, this);
+        //this.physics.add.collider(this.magicBolts, this.ghost2, this.hitEnemy, null, this);
         
     }
 
@@ -375,35 +377,35 @@ export default class levelOneScene extends Phaser.Scene {
         let x = Phaser.Math.Between(100, 900);
         let y = Phaser.Math.Between(100, 760);
 
-        let slime1 = new Enemy( this, 32, 240, 'slimeIdle', null );
+        let slime1 = new Slime( this, 32, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime1 );
 
-        let slime2 = new Enemy( this, 400, 224, 'slimeIdle', null );
+        let slime2 = new Slime( this, 400, 224, 'slimeIdle', null );
         this.slimeEnemies.add( slime2 );
 
-        let slime3 = new Enemy( this, 368, 464, 'slimeIdle', null );
+        let slime3 = new Slime( this, 368, 464, 'slimeIdle', null );
         this.slimeEnemies.add( slime3 );
 
-        let slime4 = new Enemy( this, 848, 240, 'slimeIdle', null );
+        let slime4 = new Slime( this, 848, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime4 );
         
-        let slime5 = new Enemy( this, 992, 64, 'slimeIdle', null );
+        let slime5 = new Slime( this, 992, 64, 'slimeIdle', null );
         this.slimeEnemies.add( slime5 );
 
-        let slime6 = new Enemy( this, 976, 208, 'slimeIdle', null );
+        let slime6 = new Slime( this, 976, 208, 'slimeIdle', null );
         this.slimeEnemies.add( slime6 );
 
-        let slime7 = new Enemy( this, 1280, 352, 'slimeIdle', null );
+        let slime7 = new Slime( this, 1280, 352, 'slimeIdle', null );
         this.slimeEnemies.add( slime7 );
 
         this.slimeEnemies.children.each((slime) => {
             slime.setCollideWorldBounds(true);
         }, this);
 
-        let ghost1 = new Enemy( this, x, y, 'ghost', null );
+        let ghost1 = new Ghost( this, x, y, 'ghost', null );
         this.ghostEnemies.add( ghost1 );
 
-        let ghost2 = new Enemy ( this, x, y, 'ghost', null );
+        let ghost2 = new Ghost ( this, x, y, 'ghost', null );
         this.ghostEnemies.add( ghost2 );
 
         this.ghostEnemies.children.each((ghost) => {
@@ -600,29 +602,29 @@ export default class levelOneScene extends Phaser.Scene {
             this.player.setVelocity(0);
     
             // Horizontal movement
-            if (this.cursors.left.isDown) {
+            if (this.keys.a.isDown) {
                 this.player.setVelocityX(-playerSpeed);
                 this.player.anims.play('leftWalk', true);
                 this.lastDirection = 'left';
-            } else if (this.cursors.right.isDown) {
+            } else if (this.keys.d.isDown) {
                 this.player.setVelocityX(playerSpeed);
                 this.player.anims.play('rightWalk', true);
                 this.lastDirection = 'right';
             }
     
             // Vertical movement
-            if (this.cursors.up.isDown) {
+            if (this.keys.w.isDown) {
                 this.player.setVelocityY(-playerSpeed);
                 this.player.anims.play('backWalk', true);
                 this.lastDirection = 'up';
-            } else if (this.cursors.down.isDown) {
+            } else if (this.keys.s.isDown) {
                 this.player.setVelocityY(playerSpeed);
                 this.player.anims.play('frontWalk', true);
                 this.lastDirection = 'down';
             }
     
             // If no movement keys are down, stop animations and play idle animation based on lastDirection
-            if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) {
+            if (!this.keys.w.isDown && !this.keys.a.isDown && !this.keys.s.isDown && !this.keys.d.isDown) {
                 this.player.setVelocity(0);
     
                 switch (this.lastDirection) {
@@ -644,7 +646,7 @@ export default class levelOneScene extends Phaser.Scene {
                 }
             }
         }
-
+    
         // Check for interaction key press
         if (this.interactionImage.visible && Phaser.Input.Keyboard.JustDown(this.eKey)) {
             if (this.interactionType === 'lever') {
