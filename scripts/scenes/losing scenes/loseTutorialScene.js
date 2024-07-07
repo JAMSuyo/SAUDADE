@@ -1,7 +1,7 @@
-export default class loseScene extends Phaser.Scene {
+export default class loseTutorialScene extends Phaser.Scene {
 
     constructor() {
-        super( 'loseScene' );
+        super( 'loseTutorialScene' );
     }
  // init(data){
     //     this.score = data.score;
@@ -30,7 +30,7 @@ export default class loseScene extends Phaser.Scene {
         restartButton.setInteractive();
         restartButton.on('pointerdown', () => {
             this.loseButton.play();
-            this.scene.start('levelOneBootScene');
+            this.scene.start('tutorialLevelScene');
             this.loseMusic.stop();
         });
 

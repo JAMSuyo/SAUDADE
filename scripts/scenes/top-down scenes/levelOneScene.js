@@ -433,7 +433,7 @@ export default class levelOneScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives == 0) {
-                this.scene.start('loseScene'); 
+                this.scene.start('loseLevelOneScene'); 
                 this.inGameBGMLevelOne.stop();
             } else {
                 this.player.setPosition(100, 450); 
@@ -445,7 +445,7 @@ export default class levelOneScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives == 0) {
-                this.scene.start('loseScene');
+                this.scene.start('loseLevelOneScene');
                 this.inGameBGMLevelOne.stop(); 
             } else {
                 this.player.setPosition(100, 450); 

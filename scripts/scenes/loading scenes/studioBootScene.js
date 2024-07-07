@@ -17,6 +17,7 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.image( 'startButton', '../assets/gui/buttons/startButton.png' );
         this.load.image('creditBackground', '../assets/gui/backgrounds/credits1.png');
         this.load.image('backButton', '../assets/gui/buttons/arrowLeftBtn.png');
+        this.load.image( 'instructions', '../assets/gui/backgrounds/instructions.png');
 
         // WIN AND LOSE
         this.load.image( 'winBG', '../assets/gui/backgrounds/winbg.png' );

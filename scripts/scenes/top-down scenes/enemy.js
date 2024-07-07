@@ -79,6 +79,8 @@ export class Slime extends Enemy {
         this.health = 100;
         this.speed = 60;
 
+        this.body.setSize( 8, 8);
+
         // Additional properties or behaviors specific to Slimes
         this.anims.play('slimeIdle', true);  
     }

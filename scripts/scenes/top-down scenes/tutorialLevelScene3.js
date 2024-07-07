@@ -3,35 +3,17 @@ import Enemy from "./enemy.js";
 import { Ghost } from "./enemy.js";
 import { Slime } from "./enemy.js";
 
-export default class tutorialLevelScene extends Phaser.Scene {
-    
+export default class levelOneScene extends Phaser.Scene {
+
     constructor() {
-        super('tutorialLevelScene');
+        super( 'levelOneScene' );
         this.isAttacking = false;
         this.isInvuln = false;
-        
-    }
-
-    preload() {
-        this.load.spritesheet( 'slimeAttack', '../assets/art/characters/spritesheets/enemies/slime/slimeAttack.png', { frameWidth: 64, frameHeight: 64 });
-        this.load.spritesheet( 'slimeDeath', '../assets/art/characters/spritesheets/enemies/slime/slimeDeath.png', { frameWidth: 64, frameHeight: 64 });
-        this.load.spritesheet( 'slimeHurt', '../assets/art/characters/spritesheets/enemies/slime/slimeHurt.png', { frameWidth: 64, frameHeight: 64 });
-        this.load.spritesheet( 'slimeIdle', '../assets/art/characters/spritesheets/enemies/slime/slimeIdle.png', { frameWidth: 64, frameHeight: 64 });
-        this.load.spritesheet( 'slimeWalk', '../assets/art/characters/spritesheets/enemies/slime/slimeWalk.png', { frameWidth: 64, frameHeight: 64 });
-
-        this.load.spritesheet( 'magicBolt', '../assets/art/visual effects/magicBolt.png', { frameWidth: 32, frameHeight: 32 });
     }
 
     create() {
 
         this.lives = 3;
-        this.heartIcons = [];
-
-        // Display heart icons based on the initial number of lives
-        for (let i = 0; i < this.lives; i++) {
-            const heart = this.add.image(50 + i * 40, 50, 'heart');
-            this.heartIcons.push(heart);
-        }
         
 
         /* TILE MAP */
@@ -60,32 +42,46 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.dmg = map.createLayer('Dmg', tileset, 0, 0);
 
         const background = map.createLayer('Background', tileset, 0, 0);
-
         
+        this.physics.world.setBounds(0, 0, mapOne.widthInPixels, mapOne.heightInPixels);
+        this.cameras.main.setBounds(0, 0, mapOne.widthInPixels, mapOne.heightInPixels);
 
         // Make the 'Lever-Pulled' layer invisible
         this.leverPulled.setVisible(false);
         this.trapsOff.setVisible(true);
+
+        // Collision
+        collision.setCollisionByExclusion([-1]);
+        this.doorClose.setCollisionByExclusion([-1]);
+        this.barClosed.setCollisionByExclusion([-1]);
+        this.trapsOn.setCollisionByExclusion([-1]);
+        this.leverUnpulled.setCollisionByExclusion([-1]);
+        this.tome.setCollisionByExclusion([-1]);
+        this.key.setCollisionByExclusion([-1]);
+        doorOpen.setCollisionByExclusion([-1]);
+
+        //Audio
+        this.inGameBGMLevelOne = this.sound.add('inGameBGM', { loop: true, volume: .4});
+        this.inGameBGMLevelOne.play();
+
+        //SFX
+        this.leverpullSFX = this.sound.add('leverSFX', { volume: .8 });
+        this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
+        this.swingSFX = this.sound.add('swingSFX', { volume: .8 });
+        this.fireballSFX = this.sound.add('fireballSFX', { volume: .2 });
+        this.openDoor1 = this.sound.add('openDoor', {volume: 2});
+        this.slimeDeathSFX = this.sound.add('slimeDeathSFX', { volume: 1});
+
+        // Create interaction hide it initially
+        this.interactionImage = this.add.image(0, 0, 'eKey').setVisible(false).setDepth(1);
+        this.interactionType = null;
+
 
         /* MAIN CHARACTER */
         this.player = this.physics.add.sprite(200, 100, 'frontIdle');
 
         // Camera follow the player
         this.cameras.main.startFollow(this.player);
-
-
-        //Audio
-        this.inGameBGMTutorial = this.sound.add('inGameBGM', { loop: true, volume: .5 });
-        this.inGameBGMTutorial.play();
-
-        //SFX
-        this.spellBreak = this.sound.add('spellBreak', {volume: 0.5});
-        this.openDoor1 = this.sound.add('openDoor', {volume: 2});
-        this.slimeDeathSFX = this.sound.add('slimeDeathSFX', { volume: 2})
-        this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
-        this.swingSFX = this.sound.add('swingSFX', { volume: .8 });
-        this.fireballSFX = this.sound.add('fireballSFX', { volume: .2 });
-        this.leverpullSFX = this.sound.add('leverSFX', { volume: .8 });
 
         // > Back Anims
         this.anims.create({
@@ -115,7 +111,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-        console.log('back anims')
+
         // > Front Anims
 
         this.anims.create({
@@ -208,6 +204,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
         this.player.body.setSize(8, 8);
 
+
         /* ENEMY */
 
         this.ghostEnemies = this.physics.add.group({
@@ -222,20 +219,25 @@ export default class tutorialLevelScene extends Phaser.Scene {
         });
         
         this.createEnemies();
-        
 
-        // Collision
-        collision.setCollisionByExclusion([-1]);
-        this.doorClose.setCollisionByExclusion([-1]);
-        this.barClosed.setCollisionByExclusion([-1]);
-        this.trapsOn.setCollisionByExclusion([-1]);
-        this.leverUnpulled.setCollisionByExclusion([-1]);
-        this.tome.setCollisionByExclusion([-1]);
-        this.key.setCollisionByExclusion([-1]);
-        doorOpen.setCollisionByExclusion([-1]);
-
-        
         // Enable Collision
+        this.physics.add.collider(this.player, collisionLayer);
+        this.physics.add.collider(this.player, brokenWoodenFloor, this.resetPlayerPosition, null, this); 
+        this.physics.add.collider(this.player, this.leverUnpulledLayer, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.leverUnpulledOuterSpike, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.leverUnpulledInnerSpike, this.showInteractionImage, null, this);
+        this.physics.add.collider(this.player, this.trapOnOuter, this.resetPlayerPosition, null, this);
+        this.physics.add.collider(this.player, this.trapOnInner, this.resetPlayerPosition, null, this);
+        this.physics.add.collider(this.player, this.fenceClosed);
+        this.physics.add.collider(this.player, this.Close);
+        this.physics.add.collider(this.player, this.endLayer, this.transitionToNextLevel, null, this); 
+        this.physics.add.collider(this.player, this.fakeKeyLayer, this.resetPlayerPosition, null, this); 
+        this.physics.add.collider(this.player, this.key, this.disableClosedLayer, null, this); 
+        this.physics.add.collider(this.player, this.ghostEnemies, this.resetPlayerPositionEnemy, null, this);
+        this.physics.add.collider(this.player, this.slimeEnemies, this.resetPlayerPositionEnemy, null, this);
+        //this.physics.add.collider(this.magicBolts, this.ghostEnemies, this.hitEnemy, null, this);
+
+
         this.physics.add.collider(this.player, collision);
         this.physics.add.collider(this.slimeEnemies, collision);
         this.physics.add.collider(this.player, this.doorClose);
@@ -247,8 +249,9 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.physics.add.collider(this.player, doorOpen, this.endOfTutorial, null, this);
         // this.physics.add.collider(this.player, this.ghostEnemies, this.resetPlayerPositionEnemy, null, this);
         // this.physics.add.collider(this.player, this.ghostEnemies, this.hitEnemy, null, this);
-        // this.physics.add.collider(this.player, this.slimeEnemies, this.hitEnemy, null, this);
+        this.physics.add.collider(this.player, this.slimeEnemies, this.hitEnemy, null, this);
         this.physics.add.collider(this.player, this.slimeEnemies, this.resetPlayerPositionEnemy, null, this);
+        
 
         // Create interaction image and hide it initially
         this.interactionImage = this.add.image(0, 0, 'eKey').setVisible(false).setDepth(1);
@@ -257,7 +260,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         /* CONTROLS */
         this.cursors = this.input.keyboard.createCursorKeys();
         this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);        
-        console.log('controls')
+
 
         this.keys = this.input.keyboard.addKeys({
             w: Phaser.Input.Keyboard.KeyCodes.W,
@@ -265,6 +268,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
             s: Phaser.Input.Keyboard.KeyCodes.S,
             d: Phaser.Input.Keyboard.KeyCodes.D
         });
+
 
         this.input.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown() || pointer.touchstart) {
@@ -296,9 +300,6 @@ export default class tutorialLevelScene extends Phaser.Scene {
             }
         });
 
-        
-        
-        
 
         this.magicBolts = this.physics.add.group({
             classType: Bullet,
@@ -343,6 +344,10 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
         this.shield.setTileIndexCallback( 711, this.collectShield, this );
         this.physics.add.overlap( this.player, this.shield );
+
+
+        this.physics.add.collider(this.magicBolts, this.ghostEnemies, this.hitEnemy, null, this);
+        //this.physics.add.collider(this.magicBolts, this.ghost2, this.hitEnemy, null, this);
         
     }
 
@@ -383,42 +388,30 @@ export default class tutorialLevelScene extends Phaser.Scene {
         });
     }
 
-    updateLives(newLives) {
-        // Remove existing heart icons
-        this.heartIcons.forEach(heart => heart.destroy());
-        this.heartIcons = [];
-
-        // Update the lives count
-        this.lives = newLives;
-
-        // Display updated heart icons
-        for (let i = 0; i < this.lives; i++) {
-            const heart = this.add.image(50 + i * 40, 50, 'heart');
-            this.heartIcons.push(heart);
-        }
-    }
-
     createEnemies() {
         let x = Phaser.Math.Between(100, 900);
         let y = Phaser.Math.Between(100, 760);
 
-        let slime1 = new Slime( this, 480, 144, 'slimeIdle', null );
+        let slime1 = new Slime( this, 32, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime1 );
-
-        let slime2 = new Slime( this, 320, 464, 'slimeIdle', null );
+        
+        let slime2 = new Slime( this, 400, 224, 'slimeIdle', null );
         this.slimeEnemies.add( slime2 );
 
-        let slime3 = new Slime( this, 96, 576, 'slimeIdle', null );
+        let slime3 = new Slime( this, 368, 464, 'slimeIdle', null );
         this.slimeEnemies.add( slime3 );
 
-        let slime4 = new Slime( this, 688, 448, 'slimeIdle', null );
+        let slime4 = new Slime( this, 848, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime4 );
-
-        let slime5 = new Slime( this, 784, 576, 'slimeIdle', null );
+        
+        let slime5 = new Slime( this, 992, 64, 'slimeIdle', null );
         this.slimeEnemies.add( slime5 );
 
-        let slime6 = new Slime( this, 768, 752, 'slimeIdle', null );
+        let slime6 = new Slime( this, 976, 208, 'slimeIdle', null );
         this.slimeEnemies.add( slime6 );
+
+        let slime7 = new Slime( this, 1280, 352, 'slimeIdle', null );
+        this.slimeEnemies.add( slime7 );
 
         this.slimeEnemies.children.each((slime) => {
             slime.setCollideWorldBounds(true);
@@ -427,34 +420,35 @@ export default class tutorialLevelScene extends Phaser.Scene {
         // let ghost1 = new Ghost( this, x, y, 'ghost', null );
         // this.ghostEnemies.add( ghost1 );
 
+        // let ghost2 = new Ghost ( this, x, y, 'ghost', null );
+        // this.ghostEnemies.add( ghost2 );
+
         // this.ghostEnemies.children.each((ghost) => {
         //     ghost.setCollideWorldBounds(false);
         // }, this);
     }
 
+
     resetPlayerPosition(player, tile) {
         if (!this.isInvuln) {
-            this.lives --; // Decrease life
+            this.lives -= 1; // Decrease life
             if (this.lives == 0) {
-                this.scene.start('loseTutorialScene'); 
-                this.inGameBGMTutorial.stop();
+                this.scene.start('loseScene'); 
+                this.inGameBGMLevelOne.stop();
             } else {
-                this.player.setPosition(200, 100); 
+                this.player.setPosition(100, 450); 
             }
         }
     }
     
     resetPlayerPositionEnemy(player, enemy) {
         if (!this.isInvuln) {
-            this.lives --; // Decrease life
+            this.lives -= 1; // Decrease life
             if (this.lives == 0) {
-                this.scene.start('loseTutorialScene');
-                this.inGameBGMTutorial.stop();
+                this.scene.start('loseScene');
+                this.inGameBGMLevelOne.stop(); 
             } else {
-                if (this.player) {
-                    this.player.setPosition(200, 100);
-                }
-                 
+                this.player.setPosition(100, 450); 
             }
         }
     }
@@ -463,51 +457,54 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.interactionImage.setPosition(this.player.x, this.player.y - 50);
         this.interactionImage.setVisible(true);
 
-        if (tile.layer.name === 'Lever-Unpulled') {
+        if (tile.layer.name === 'lever-Unpulled') {
             this.interactionType = 'lever';
-        } else if (tile.layer.name === 'Tome') {
-            this.interactionType = 'tome';
-        } else if (tile.layer.name === 'Key') {
-            this.interactionType = 'key';
+        } else if (tile.layer.name === 'leverUnpulledOuterSpike') {
+            this.interactionType = 'outerSpike';
+        } else if (tile.layer.name === 'leverUnpulledInnerSpike') {
+            this.interactionType = 'innerSpike';
         }
-        console.log('player')
     }
 
-    pullLever() {
-        this.leverUnpulled.setVisible(false);
-        this.leverPulled.setVisible(true);
-        this.trapsOn.setVisible(false);
-        this.trapsOn.setCollisionByExclusion([]);
+    pullLeverOne() {
+        this.leverPulledLayer.setVisible(true);
+        this.leverUnpulledLayer.setVisible(false);
+        this.fenceClosed.setVisible(false);
+        this.fenceClosed.setCollisionByExclusion([]); 
         this.interactionImage.setVisible(false);
-        console.log('lever')
         this.leverpullSFX.play();
     }
 
-    getTome() {
-        this.tome.setVisible(false);
-        this.barClosed.setVisible(false);
-        this.barClosed.setCollisionByExclusion([]);
-        this.tome.setCollisionByExclusion([]);
+    triggerOuterSpike() {
+        this.leverPulledOuterSpike.setVisible(true);
+        this.leverUnpulledOuterSpike.setVisible(false);
+        this.trapOnOuter.setVisible(false);
         this.interactionImage.setVisible(false);
-        console.log('tome')
-        this.spellBreak.play();
-        this.pickUpSFX.play();
+        this.trapOnOuter.setCollisionByExclusion([]);
+        this.leverpullSFX.play(); 
     }
 
-    getKey() {
-        this.doorClose.setVisible(false);
+    triggerInnerSpike() {
+        this.leverPulledInnerSpike.setVisible(true);
+        this.leverUnpulledInnerSpike.setVisible(false);
+        this.trapOnInner.setVisible(false);
+        this.interactionImage.setVisible(false);
+        this.trapOnInner.setCollisionByExclusion([]);
+        this.leverpullSFX.play();  
+    }
+
+    disableClosedLayer(player, tile) {
+        this.Close.setVisible(false);
+        this.Close.setCollisionByExclusion([]); 
         this.key.setVisible(false);
-        this.doorClose.setCollisionByExclusion([]);
         this.key.setCollisionByExclusion([]);
-        this.interactionImage.setVisible(false);
-        console.log('key')
-        this.openDoor1.play();
+        this.openDoor1.play(); 
         this.pickUpSFX.play();
     }
 
-    endOfTutorial(player, tile){
-        this.scene.start('levelOneBootScene');
-        this.inGameBGMTutorial.stop();
+    transitionToNextLevel(player, tile) {
+        this.scene.start('levelTwoBootScene');
+        this.inGameBGMLevelOne.stop();
     }
 
     shootBullet(pointer) {
@@ -534,7 +531,6 @@ export default class tutorialLevelScene extends Phaser.Scene {
             this.fireballSFX.play();
         }
     }
-        
 
     hitEnemy(bullet, enemy) {
         // if (!bullet.active) return; // Check if bullet is active (to prevent multiple hits)
@@ -554,9 +550,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
         bullet.destroy();
         enemy.destroy();
         this.slimeDeathSFX.play();
+
     }
-    
-    
 
     collectDMG( sprite, tile ) {
         this.dmg.removeTileAt( tile.x, tile.y ); 
@@ -588,9 +583,9 @@ export default class tutorialLevelScene extends Phaser.Scene {
         let tintColor = 0x53ae42;
         let tintDuration = 2000;
 
-        this.pickUpSFX.play();
-
         this.player.setTint(tintColor);
+
+        this.pickUpSFX.play();
 
         this.tweens.add({
             targets:this.player,
@@ -611,7 +606,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
         let tintColor = 0x3270e1;
         let tintDuration = 10000;
-
+        
         this.pickUpSFX.play();
 
         this.isInvuln = true;
@@ -631,6 +626,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
 
     update() {
+
         const playerSpeed = 100;
     
         if (!this.isAttacking) { // Only handle movement if not attacking
@@ -639,16 +635,10 @@ export default class tutorialLevelScene extends Phaser.Scene {
     
             // Horizontal movement
             if (this.keys.a.isDown) { 
-                if (this.resetPlayerPositionEnemy){
-                    this.player.setVelocity(0);
-                }
                 this.player.setVelocityX(-playerSpeed);
                 this.player.anims.play('leftWalk', true);
                 this.lastDirection = 'left';
             } else if (this.keys.d.isDown) {
-                if (this.resetPlayerPositionEnemy){
-                    this.player.setVelocity(0);
-                }
                 this.player.setVelocityX(playerSpeed);
                 this.player.anims.play('rightWalk', true);
                 this.lastDirection = 'right';
@@ -656,16 +646,10 @@ export default class tutorialLevelScene extends Phaser.Scene {
     
             // Vertical movement
             if (this.keys.w.isDown) {
-                if (this.resetPlayerPositionEnemy){
-                    this.player.setVelocity(0);
-                }
                 this.player.setVelocityY(-playerSpeed);
                 this.player.anims.play('backWalk', true);
                 this.lastDirection = 'up';
             } else if (this.keys.s.isDown) {
-                if (this.resetPlayerPositionEnemy){
-                    this.player.setVelocity(0);
-                }
                 this.player.setVelocityY(playerSpeed);
                 this.player.anims.play('frontWalk', true);
                 this.lastDirection = 'down';
@@ -694,33 +678,20 @@ export default class tutorialLevelScene extends Phaser.Scene {
                 }
             }
         }
-
+    
         // Check for interaction key press
         if (this.interactionImage.visible && Phaser.Input.Keyboard.JustDown(this.eKey)) {
             if (this.interactionType === 'lever') {
-                this.pullLever();
-            } else if (this.interactionType === 'tome') {
-                this.getTome();
-            } else if (this.interactionType === 'key') {
-                this.getKey();
+                this.pullLeverOne();
+            } else if (this.interactionType === 'outerSpike') {
+                this.triggerOuterSpike();
+            } else if (this.interactionType === 'innerSpike') {
+                this.triggerInnerSpike();
             }
-            console.log('player')
         }
-
-        if (this.dmgFX.visible) {
-            let offsetX = 10;
-            let offsetY = -20;
-            this.dmgFX.setPosition(this.player.x + offsetX, this.player.y + offsetY);
-        }
-
-        // Ghost follow Kore
-        if (this.ghostEnemies && this.ghostEnemies.body) {
-            this.physics.moveToObject(this.ghostEnemies, this.player, 40);
-        }        
         
+        if (this.ghostEnemies && this.ghostEnemies.body) {
+            this.physics.moveToObject(this.ghostEnemies, this.player, 80);
+        }
     }
-
-    
 }
-
-

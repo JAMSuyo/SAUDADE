@@ -313,7 +313,7 @@ export default class startVNScene extends Phaser.Scene {
         this.cameras.main.fadeOut(2000, 0, 0, 0, (camera, progress) => {
             if (progress === 1) {
                 // Transition to the next scene
-                this.scene.start('tutorialBootScene'); 
+                this.scene.start('instructionsScene'); 
             }
         });
 

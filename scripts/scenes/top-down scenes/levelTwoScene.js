@@ -358,7 +358,7 @@ export default class levelTwoScene extends Phaser.Scene {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
             if (this.lives <= 0) {
-                this.scene.start('loseScene');
+                this.scene.start('loseLevelTwoScene');
                 this.inGameBGMLevelOne.stop(); 
             } else {
                 this.player.setPosition(200, 100); 
@@ -368,9 +368,9 @@ export default class levelTwoScene extends Phaser.Scene {
     
     resetPlayerPositionEnemy(player, enemy) {
         if (!this.isInvuln) {
-            this.lives -= 1; // Decrease life
+            this.lives -= 1; // Decrease life 
             if (this.lives <= 0) {
-                this.scene.start('loseScene');
+                this.scene.start('loseLevelTwoScene');
                 this.inGameBGMLevelOne.stop();  
             } else {
                 this.player.setPosition(200, 100); 
@@ -395,7 +395,7 @@ export default class levelTwoScene extends Phaser.Scene {
     }
 
     endOfGame(player, tile) {
-        this.scene.start("WinningScene");
+        this.scene.start("endVNScene");
         this.inGameBGMLevelOne.stop();
     }
 

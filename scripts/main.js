@@ -9,9 +9,12 @@ import levelOneScene from "./scenes/top-down scenes/levelOneScene.js";
 import levelTwoBootScene from "./scenes/loading scenes/levelTwoBootScene.js";
 import levelTwoScene from "./scenes/top-down scenes/levelTwoScene.js";
 import endVNScene from "./scenes/visual novel scenes/endVNScene.js";
-import loseScene from "./scenes/loseScene.js";
 import winScene from "./scenes/winScene.js";
 import creditsScene from "./scenes/creditsScene.js";
+import loseTutorialScene from "./scenes/losing scenes/loseTutorialScene.js";
+import loseLevelOneScene from "./scenes/losing scenes/loseLevelOneScene.js";
+import loseLevelTwoScene from "./scenes/losing scenes/loseLevelTwoScene.js";
+import instructionsScene from "./scenes/loading scenes/instructionsScene.js";
 
 
 
@@ -42,9 +45,12 @@ var config = {
         levelTwoBootScene, 
         levelTwoScene, 
         endVNScene, 
-        loseScene, 
+        loseTutorialScene, 
         winScene,
-        creditsScene ]
+        creditsScene,
+        loseLevelOneScene,
+        loseLevelTwoScene,
+        instructionsScene ]
 };
 
 new Phaser.Game( config );
