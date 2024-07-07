@@ -118,6 +118,7 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.audio( 'openDoor', '../assets/sounds/sfx/openDoor.mp3' );
         this.load.audio( 'buttonClick', '../assets/sounds/sfx/button1.mp3' );
         
+        this.load.audio( 'inGameBGM', '../assets/sounds/bgm/Ingame_music.mp3' );
         
         this.load.audio('footsteps', './assets/Sounds/sfx/SFX/footsteps3.mp3');
         this.load.audio('spellBreak', './assets/Sounds/sfx/SFX/spellBroken.mp3');
@@ -126,6 +127,12 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.audio('unlockDoor', './assets/Sounds/sfx/SFX/unlock.mp3');
         this.load.audio('openDoor1', './assets/Sounds/sfx/SFX/openDoor1.mp3');
         this.load.audio('magicSFX', './assets/Sounds/sfx/SFX/magicAura.mp3');
+        this.load.audio('leverSFX', './assets/Sounds/sfx/SFX/leverpull.mp3');
+        this.load.audio('pickUpSFX', './assets/Sounds/sfx/SFX/pick.wav');
+        this.load.audio('swingSFX', './assets/Sounds/sfx/SFX/swordSwing.wav');
+        this.load.audio('fireballSFX', './assets/Sounds/sfx/SFX/fireball.wav');
+        this.load.audio('slimeDeathSFX', './assets/Sounds/sfx/SFX/SlimeDeath.mp3');
+        this.load.audio('ghostSFX', './assets/Sounds/sfx/SFX/ghost.wav');
 
         // GUI
         this.load.image( 'dialogueBox', '../assets/gui/textboxes/dialogueBoxResized1.png' );
@@ -159,7 +166,7 @@ export default class studioBootScene extends Phaser.Scene {
             }
         });
 
-        this.time.delayedCall( 7000, () => {
+        this.time.delayedCall( 1000, () => {
             this.scene.start( 'bootScene' );
         });
     }

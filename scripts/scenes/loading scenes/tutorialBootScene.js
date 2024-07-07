@@ -22,7 +22,7 @@ export default class tutorialBootScene extends Phaser.Scene {
         const funFactText = this.add.bitmapText(centerX, centerY + 30, 'font', 'Tutorial - Underground, Antechamber', 12).setOrigin(0.5, 0.5);
 
         //Next scene
-        this.time.delayedCall(2000, () => {
+        this.time.delayedCall(3000, () => {
              this.scene.start('tutorialLevelScene');
         });
     } 

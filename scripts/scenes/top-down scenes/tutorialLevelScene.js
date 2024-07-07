@@ -73,6 +73,19 @@ export default class tutorialLevelScene extends Phaser.Scene {
         // Camera follow the player
         this.cameras.main.startFollow(this.player);
 
+
+        //Audio
+        this.inGameBGMTutorial = this.sound.add('inGameBGM', { loop: true, volume: .5 });
+        this.inGameBGMTutorial.play();
+
+        this.spellBreak = this.sound.add('spellBreak', {volume: 0.5});
+        this.openDoor1 = this.sound.add('openDoor', {volume: 2});
+        this.slimeDeathSFX = this.sound.add('slimeDeathSFX', { volume: 2})
+        this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
+        this.swingSFX = this.sound.add('swingSFX', { volume: .8 });
+        this.fireballSFX = this.sound.add('fireballSFX', { volume: .2 });
+        this.leverpullSFX = this.sound.add('leverSFX', { volume: .8 });
+
         // > Back Anims
         this.anims.create({
             key: 'backAttack',
@@ -245,6 +258,13 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);        
         console.log('controls')
 
+        this.keys = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
         this.input.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown() || pointer.touchstart) {
                 this.isAttacking = true; // Set the attacking flag
@@ -253,15 +273,19 @@ export default class tutorialLevelScene extends Phaser.Scene {
                 switch (this.lastDirection) {
                     case 'left':
                         animKey = 'leftAttack';
+                        this.swingSFX.play();
                         break;
                     case 'right':
                         animKey = 'rightAttack';
+                        this.swingSFX.play();
                         break;
                     case 'up':
                         animKey = 'backAttack';
+                        this.swingSFX.play();
                         break;
                     case 'down':
                         animKey = 'frontAttack';
+                        this.swingSFX.play();
                         break;
                 }
                 console.log('Playing animation:', animKey);
@@ -399,19 +423,20 @@ export default class tutorialLevelScene extends Phaser.Scene {
             slime.setCollideWorldBounds(true);
         }, this);
 
-        let ghost1 = new Ghost( this, x, y, 'ghost', null );
-        this.ghostEnemies.add( ghost1 );
+        // let ghost1 = new Ghost( this, x, y, 'ghost', null );
+        // this.ghostEnemies.add( ghost1 );
 
-        this.ghostEnemies.children.each((ghost) => {
-            ghost.setCollideWorldBounds(false);
-        }, this);
+        // this.ghostEnemies.children.each((ghost) => {
+        //     ghost.setCollideWorldBounds(false);
+        // }, this);
     }
 
     resetPlayerPosition(player, tile) {
         if (!this.isInvuln) {
-            this.lives -= 1; // Decrease life
-            if (this.lives <= 0) {
+            this.lives --; // Decrease life
+            if (this.lives == 0) {
                 this.scene.start('loseScene'); 
+                this.inGameBGMTutorial.stop();
             } else {
                 this.player.setPosition(200, 100); 
             }
@@ -420,9 +445,10 @@ export default class tutorialLevelScene extends Phaser.Scene {
     
     resetPlayerPositionEnemy(player, enemy) {
         if (!this.isInvuln) {
-            this.lives -= 1; // Decrease life
-            if (this.lives <= 0) {
-                this.scene.start('loseScene'); 
+            this.lives --; // Decrease life
+            if (this.lives == 0) {
+                this.scene.start('loseScene');
+                this.inGameBGMTutorial.stop();
             } else {
                 this.player.setPosition(200, 100); 
             }
@@ -450,6 +476,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.trapsOn.setCollisionByExclusion([]);
         this.interactionImage.setVisible(false);
         console.log('lever')
+        this.leverpullSFX.play();
     }
 
     getTome() {
@@ -459,6 +486,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.tome.setCollisionByExclusion([]);
         this.interactionImage.setVisible(false);
         console.log('tome')
+        this.spellBreak.play();
+        this.pickUpSFX.play();
     }
 
     getKey() {
@@ -468,10 +497,13 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.key.setCollisionByExclusion([]);
         this.interactionImage.setVisible(false);
         console.log('key')
+        this.openDoor1.play();
+        this.pickUpSFX.play();
     }
 
     endOfTutorial(player, tile){
         this.scene.start('levelOneBootScene');
+        this.inGameBGMTutorial.stop();
     }
 
     shootBullet(pointer) {
@@ -495,6 +527,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
     
             // Set bullet velocity towards clamped pointer coordinates
             this.physics.velocityFromRotation(angle, 500, bullet.body.velocity);
+            this.fireballSFX.play();
         }
     }
         
@@ -516,6 +549,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         // }, 500);
         bullet.destroy();
         enemy.destroy();
+        this.slimeDeathSFX.play();
     }
     
     
@@ -525,6 +559,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
         
         let tintColor = 0xff0000; 
         let tintDuration = 10000; 
+
+        this.pickUpSFX.play();
 
         // Tint the sprite immediately
         this.player.setTint(tintColor);
@@ -548,6 +584,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
         let tintColor = 0x53ae42;
         let tintDuration = 2000;
 
+        this.pickUpSFX.play();
+
         this.player.setTint(tintColor);
 
         this.tweens.add({
@@ -569,6 +607,8 @@ export default class tutorialLevelScene extends Phaser.Scene {
 
         let tintColor = 0x3270e1;
         let tintDuration = 10000;
+
+        this.pickUpSFX.play();
 
         this.isInvuln = true;
         this.player.setTint(tintColor);
@@ -594,29 +634,29 @@ export default class tutorialLevelScene extends Phaser.Scene {
             this.player.setVelocity(0);
     
             // Horizontal movement
-            if (this.cursors.left.isDown) {
+            if (this.keys.a.isDown) { 
                 this.player.setVelocityX(-playerSpeed);
                 this.player.anims.play('leftWalk', true);
                 this.lastDirection = 'left';
-            } else if (this.cursors.right.isDown) {
+            } else if (this.keys.d.isDown) {
                 this.player.setVelocityX(playerSpeed);
                 this.player.anims.play('rightWalk', true);
                 this.lastDirection = 'right';
             }
     
             // Vertical movement
-            if (this.cursors.up.isDown) {
+            if (this.keys.w.isDown) {
                 this.player.setVelocityY(-playerSpeed);
                 this.player.anims.play('backWalk', true);
                 this.lastDirection = 'up';
-            } else if (this.cursors.down.isDown) {
+            } else if (this.keys.s.isDown) {
                 this.player.setVelocityY(playerSpeed);
                 this.player.anims.play('frontWalk', true);
                 this.lastDirection = 'down';
             }
     
             // If no movement keys are down, stop animations and play idle animation based on lastDirection
-            if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) {
+            if (!this.keys.w.isDown && !this.keys.a.isDown && !this.keys.s.isDown && !this.keys.d.isDown) {
                 this.player.setVelocity(0);
     
                 switch (this.lastDirection) {

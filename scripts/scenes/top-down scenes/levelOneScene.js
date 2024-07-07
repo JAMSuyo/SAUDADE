@@ -76,6 +76,16 @@ export default class levelOneScene extends Phaser.Scene {
         this.endLayer.setCollisionByExclusion([-1]); 
 
         
+        //Audio
+        this.inGameBGMLevelOne = this.sound.add('inGameBGM', { loop: true, volume: .4});
+        this.inGameBGMLevelOne.play();
+
+        this.leverpullSFX = this.sound.add('leverSFX', { volume: .8 });
+        this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
+        this.swingSFX = this.sound.add('swingSFX', { volume: .8 });
+        this.fireballSFX = this.sound.add('fireballSFX', { volume: .2 });
+        this.openDoor1 = this.sound.add('openDoor', {volume: 2});
+        this.slimeDeathSFX = this.sound.add('slimeDeathSFX', { volume: 1});
 
         // Create interaction hide it initially
         this.interactionImage = this.add.image(0, 0, 'eKey').setVisible(false).setDepth(1);
@@ -267,15 +277,19 @@ export default class levelOneScene extends Phaser.Scene {
                 switch (this.lastDirection) {
                     case 'left':
                         animKey = 'leftAttack';
+                        this.swingSFX.play();
                         break;
                     case 'right':
                         animKey = 'rightAttack';
+                        this.swingSFX.play();
                         break;
                     case 'up':
                         animKey = 'backAttack';
+                        this.swingSFX.play();
                         break;
                     case 'down':
                         animKey = 'frontAttack';
+                        this.swingSFX.play();
                         break;
                 }
                 console.log('Playing animation:', animKey);
@@ -379,7 +393,7 @@ export default class levelOneScene extends Phaser.Scene {
 
         let slime1 = new Slime( this, 32, 240, 'slimeIdle', null );
         this.slimeEnemies.add( slime1 );
-
+        
         let slime2 = new Slime( this, 400, 224, 'slimeIdle', null );
         this.slimeEnemies.add( slime2 );
 
@@ -402,23 +416,24 @@ export default class levelOneScene extends Phaser.Scene {
             slime.setCollideWorldBounds(true);
         }, this);
 
-        let ghost1 = new Ghost( this, x, y, 'ghost', null );
-        this.ghostEnemies.add( ghost1 );
+        // let ghost1 = new Ghost( this, x, y, 'ghost', null );
+        // this.ghostEnemies.add( ghost1 );
 
-        let ghost2 = new Ghost ( this, x, y, 'ghost', null );
-        this.ghostEnemies.add( ghost2 );
+        // let ghost2 = new Ghost ( this, x, y, 'ghost', null );
+        // this.ghostEnemies.add( ghost2 );
 
-        this.ghostEnemies.children.each((ghost) => {
-            ghost.setCollideWorldBounds(false);
-        }, this);
+        // this.ghostEnemies.children.each((ghost) => {
+        //     ghost.setCollideWorldBounds(false);
+        // }, this);
     }
 
 
     resetPlayerPosition(player, tile) {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
-            if (this.lives <= 0) {
+            if (this.lives == 0) {
                 this.scene.start('loseScene'); 
+                this.inGameBGMLevelOne.stop();
             } else {
                 this.player.setPosition(100, 450); 
             }
@@ -428,8 +443,9 @@ export default class levelOneScene extends Phaser.Scene {
     resetPlayerPositionEnemy(player, enemy) {
         if (!this.isInvuln) {
             this.lives -= 1; // Decrease life
-            if (this.lives <= 0) {
-                this.scene.start('loseScene'); 
+            if (this.lives == 0) {
+                this.scene.start('loseScene');
+                this.inGameBGMLevelOne.stop(); 
             } else {
                 this.player.setPosition(100, 450); 
             }
@@ -455,6 +471,7 @@ export default class levelOneScene extends Phaser.Scene {
         this.fenceClosed.setVisible(false);
         this.fenceClosed.setCollisionByExclusion([]); 
         this.interactionImage.setVisible(false);
+        this.leverpullSFX.play();
     }
 
     triggerOuterSpike() {
@@ -462,7 +479,8 @@ export default class levelOneScene extends Phaser.Scene {
         this.leverUnpulledOuterSpike.setVisible(false);
         this.trapOnOuter.setVisible(false);
         this.interactionImage.setVisible(false);
-        this.trapOnOuter.setCollisionByExclusion([]); 
+        this.trapOnOuter.setCollisionByExclusion([]);
+        this.leverpullSFX.play(); 
     }
 
     triggerInnerSpike() {
@@ -470,18 +488,22 @@ export default class levelOneScene extends Phaser.Scene {
         this.leverUnpulledInnerSpike.setVisible(false);
         this.trapOnInner.setVisible(false);
         this.interactionImage.setVisible(false);
-        this.trapOnInner.setCollisionByExclusion([]); 
+        this.trapOnInner.setCollisionByExclusion([]);
+        this.leverpullSFX.play();  
     }
 
     disableClosedLayer(player, tile) {
         this.Close.setVisible(false);
         this.Close.setCollisionByExclusion([]); 
         this.key.setVisible(false);
-        this.key.setCollisionByExclusion([]); 
+        this.key.setCollisionByExclusion([]);
+        this.openDoor1.play(); 
+        this.pickUpSFX.play();
     }
 
     transitionToNextLevel(player, tile) {
         this.scene.start('levelTwoBootScene');
+        this.inGameBGMLevelOne.stop();
     }
 
     shootBullet(pointer) {
@@ -505,6 +527,7 @@ export default class levelOneScene extends Phaser.Scene {
     
             // Set bullet velocity towards clamped pointer coordinates
             this.physics.velocityFromRotation(angle, 500, bullet.body.velocity);
+            this.fireballSFX.play();
         }
     }
 
@@ -525,6 +548,8 @@ export default class levelOneScene extends Phaser.Scene {
         // }, 500);
         bullet.destroy();
         enemy.destroy();
+        this.slimeDeathSFX.play();
+
     }
 
     collectDMG( sprite, tile ) {
@@ -532,6 +557,8 @@ export default class levelOneScene extends Phaser.Scene {
         
         let tintColor = 0xff0000; 
         let tintDuration = 10000; 
+
+        this.pickUpSFX.play();
 
         // Tint the sprite immediately
         this.player.setTint(tintColor);
@@ -557,6 +584,8 @@ export default class levelOneScene extends Phaser.Scene {
 
         this.player.setTint(tintColor);
 
+        this.pickUpSFX.play();
+
         this.tweens.add({
             targets:this.player,
             tint: 0xffffff, // Return to no tint (white)
@@ -576,6 +605,8 @@ export default class levelOneScene extends Phaser.Scene {
 
         let tintColor = 0x3270e1;
         let tintDuration = 10000;
+        
+        this.pickUpSFX.play();
 
         this.isInvuln = true;
         this.player.setTint(tintColor);
@@ -602,7 +633,7 @@ export default class levelOneScene extends Phaser.Scene {
             this.player.setVelocity(0);
     
             // Horizontal movement
-            if (this.keys.a.isDown) {
+            if (this.keys.a.isDown) { 
                 this.player.setVelocityX(-playerSpeed);
                 this.player.anims.play('leftWalk', true);
                 this.lastDirection = 'left';

@@ -9,9 +9,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // Set other properties like health, speed, etc.
         this.health = 100;
-        this.speed = 60; // Adjust as needed
+        this.speed = 10; // Adjust as needed
 
-        this.setSize(16, 16);
+        this.setSize(20, 20);
         this.setOffset(8, 8);
 
         // Reference to the player
@@ -80,7 +80,7 @@ export class Slime extends Enemy {
         this.speed = 60;
 
         // Additional properties or behaviors specific to Slimes
-        this.anims.play('slimeIdle', true);
+        this.anims.play('slimeIdle', true);  
     }
 
     // Override methods if needed
