@@ -78,6 +78,7 @@ export default class tutorialLevelScene extends Phaser.Scene {
         this.inGameBGMTutorial = this.sound.add('inGameBGM', { loop: true, volume: .5 });
         this.inGameBGMTutorial.play();
 
+        //SFX
         this.spellBreak = this.sound.add('spellBreak', {volume: 0.5});
         this.openDoor1 = this.sound.add('openDoor', {volume: 2});
         this.slimeDeathSFX = this.sound.add('slimeDeathSFX', { volume: 2})

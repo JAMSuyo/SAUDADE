@@ -80,6 +80,7 @@ export default class levelOneScene extends Phaser.Scene {
         this.inGameBGMLevelOne = this.sound.add('inGameBGM', { loop: true, volume: .4});
         this.inGameBGMLevelOne.play();
 
+        //SFX
         this.leverpullSFX = this.sound.add('leverSFX', { volume: .8 });
         this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
         this.swingSFX = this.sound.add('swingSFX', { volume: .8 });

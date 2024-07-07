@@ -127,6 +127,8 @@ export default class studioBootScene extends Phaser.Scene {
         this.load.audio('unlockDoor', './assets/Sounds/sfx/SFX/unlock.mp3');
         this.load.audio('openDoor1', './assets/Sounds/sfx/SFX/openDoor1.mp3');
         this.load.audio('magicSFX', './assets/Sounds/sfx/SFX/magicAura.mp3');
+
+        //New Added Audio
         this.load.audio('leverSFX', './assets/Sounds/sfx/SFX/leverpull.mp3');
         this.load.audio('pickUpSFX', './assets/Sounds/sfx/SFX/pick.wav');
         this.load.audio('swingSFX', './assets/Sounds/sfx/SFX/swordSwing.wav');

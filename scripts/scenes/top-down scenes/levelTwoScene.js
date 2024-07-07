@@ -175,9 +175,11 @@ export default class levelTwoScene extends Phaser.Scene {
         this.Tome.setCollisionByExclusion([-1]);
         this.endLayer.setCollisionByExclusion([-1]);
 
+        //Audio
         this.inGameBGMLevelOne = this.sound.add('inGameBGM', { loop: true, volume: .4});
         this.inGameBGMLevelOne.play();
 
+        //SFX
         this.pickUpSFX = this.sound.add('pickUpSFX', { volume: .8 });
         this.swingSFX = this.sound.add('swingSFX', { volume: .8 });
         this.fireballSFX = this.sound.add('fireballSFX', { volume: .2 });

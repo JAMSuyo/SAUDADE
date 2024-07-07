@@ -30,8 +30,7 @@ export default class mainMenuScene extends Phaser.Scene {
         startButton.setScale( 0.08 );
         startButton.on( 'pointerdown', () => {
             this.button.play()
-            this.scene.start( 'tutorialLevelScene' );
-            // this.scene.start( 'startVNScene' );
+            this.scene.start( 'startVNScene' );
             this.bgm.stop();
         });
 
